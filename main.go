@@ -9,24 +9,48 @@ type Menu struct {
 	Category string
 	Price    float64
 }
+type menuList [NMAX]Menu
 
 func main() {
 	//interface menu
-	var n int
-	fmt.Println("Welcome to our cafe's catalog")
-	fmt.Println("1. Add menu")
-	fmt.Scan(&n)
-	if n == 1 {
-		addMenu()
+	fmt.Println("Who are using this cafe's catalog?")
+	var user string
+	fmt.Scanln(&user)
+
+	// only admin and customer can access the menu
+	if user == "admin" {
+		adminMenu()
+	} else if user == "customer" {
+		customerMenu()
+	} else {
+		fmt.Println("Invalid user")
 	}
 }
 
-func addMenu() {
-	var menu Menu
-	fmt.Print("Menu name:")
-	fmt.Scanln(&menu.Name)
-	fmt.Print("Menu category:")
-	fmt.Scanln(&menu.Category)
-	fmt.Print("Menu price:")
-	fmt.Scanln(&menu.Price)
+func adminMenu() {
+	var list menuList
+	var n int
+	fmt.Println("What would you like to do?")
+	fmt.Println("1. Add menu")
+
+	fmt.Scan(&n)
+	if n == 1 {
+		addMenu(&list)
+	}
+}
+
+func addMenu(list *menuList) {
+	var n int
+	fmt.Println("How many menu do you want to add?")
+	fmt.Scan(&n)
+	for i := 0; i < n; i++ {
+		fmt.Print("Menu name:")
+		fmt.Scan(&list[i].Name)
+
+		fmt.Print("Menu category:")
+		fmt.Scan(&list[i].Category)
+
+		fmt.Print("Menu price:")
+		fmt.Scan(&list[i].Price)
+	}
 }
