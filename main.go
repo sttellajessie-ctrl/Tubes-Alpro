@@ -7,7 +7,7 @@ const NMAX int = 100
 type Menu struct {
 	Name     string
 	Category string
-	Price    float64
+	Price1   float64
 }
 type menuList [NMAX]Menu
 
