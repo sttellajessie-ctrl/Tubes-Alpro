@@ -35,7 +35,8 @@ func adminMenu() {
 	fmt.Println("1. Add menu")
 	fmt.Println("2. Delete menu")
 	fmt.Println("3. Edit menu")
-	fmt.Println("4. Exit")
+	fmt.Println("4. Show menu")
+	fmt.Println("5. Exit")
 	fmt.Scan(&choose)
 	if choose == 1 {
 		addMenu(&list)
