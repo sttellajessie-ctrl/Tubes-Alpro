@@ -5,16 +5,16 @@ import "fmt"
 const NMAX int = 100
 
 type Menu struct {
-	Name     	string
-	Category 	string
-	Price    	int
+	Name        string
+	Category    string
+	Price       int
 	composition string
-	status  	bool
+	status      bool
 }
 type menuList [NMAX]Menu
 
 func main() {
-	//interface menu  
+	//interface menu
 	fmt.Println("Who are using this cafe's catalog?")
 	var user string
 	fmt.Scanln(&user)
@@ -35,8 +35,7 @@ func adminMenu() {
 	fmt.Println("1. Add menu")
 	fmt.Println("2. Delete menu")
 	fmt.Println("3. Edit menu")
-	fmt.Println("4. Show menu")
-	fmt.Println("5. Exit")
+	fmt.Println("4. Exit")
 	fmt.Scan(&choose)
 	if choose == 1 {
 		addMenu(&list)
@@ -102,11 +101,11 @@ func customerMenu() {
 	} else if category == "dessert" {
 		fmt.Println("Here is our dessert menu:")
 		// display dessert menu
-	} else { 
+	} else {
 		fmt.Println("Invalid category")
 	}
 
-	// ask customer what they want to 
+	// ask customer what they want to
 	fmt.Println("What would you like?")
 	fmt.Println("1. Add Order")
 	fmt.Println("2. Delete Order")
@@ -129,13 +128,13 @@ func customerMenu() {
 
 func addOrder(order *orderList, list menuList) {
 	// Implementation for adding an order
-	var n int 
+	var n int
 	fmt.Println("How many menu do you want to order?")
 	fmt.Scan(&n)
 	for i := 0; i < n; i++ {
 		fmt.Print("Menu name:")
 		fmt.Scan(&order[i].Name)
-		
+
 		fmt.Print("Menu price:")
 		fmt.Scan(&order[i].Price)
 	}
