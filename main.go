@@ -414,8 +414,9 @@ func showOrder(cart orderList, orderCount int) {
 	var i int
 	for i = 0; i < orderCount; i++ {
 		var order Order = cart[i]
-		fmt.Printf("%d. [%s] %s - Rp%d (Available: %t)\n", i+1, order.Name, order.Price, order.Quantity)
+		fmt.Printf("%d. [%s] - Rp%d (Quantity: %d)\n", i+1, order.Name, order.Price, order.Quantity)
 	}
+
 }
 
 func SearchOrderBiner(cart orderList, orderCount int, name string) int {
