@@ -284,9 +284,8 @@ func customerMenu(catalog *menuList, menuCount int) {
 		} else if choose == 4 {
 			//edit order
 			editOrder(&currentOrders, orderCount)
-
 		} else if choose == 5 {
-			//func show bill
+			//show bill for customer
 			showBill(currentOrders, orderCount)
 		} else if choose == 6 {
 			exit = true
@@ -344,7 +343,6 @@ func showMenuByCategory(catalog menuList, menuCount int, category string) {
 	}
 }
 
-// Still in progress, not yet implemented
 func showBill(cart orderList, orderCount int) {
 	var i, total_amount, total_item int
 	total_item = 0
