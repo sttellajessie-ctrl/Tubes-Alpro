@@ -422,6 +422,7 @@ func showOrder(cart orderList, orderCount int) {
 	if !found {
 		fmt.Println("The menu is currently empty.")
 	}
+
 }
 
 func SearchOrderBiner(cart orderList, orderCount int, name string) int {
