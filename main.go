@@ -65,9 +65,9 @@ func adminMenu(catalog *menuList, menuCount *int) {
 	var exit bool = false
 	for !exit {
 		var choose int
-	
+
 		fmt.Println("\n--- Admin Menu ---")
-		
+
 		fmt.Println("1. Add menu")
 		fmt.Println("2. Delete menu")
 		fmt.Println("3. Edit menu")
@@ -275,7 +275,7 @@ func customerMenu(catalog *menuList, menuCount int) {
 			fmt.Printf("Here is our %s menu:\n", category)
 			showMenuByCategory(sorted, menuCount, category)
 
-		}else if choose == 2 {
+		} else if choose == 2 {
 			//add order func
 			addOrder(&currentOrders, &orderCount, &*catalog, menuCount)
 		} else if choose == 3 {
@@ -480,5 +480,18 @@ func sortbyDesc(list menuList, n int) menuList {
 	return list
 }
 
-
-//only need the statistic one \
+func statisticPerCatergory(catalog menuList, menuCount int) {
+	var drinkCount, foodCount int
+	drinkCount = 0
+	foodCount = 0
+	for i := 0; i < menuCount; i++ {
+		if catalog[i].Category == "Drink" {
+			drinkCount = drinkCount + 1
+		} else if catalog[i].Category == "Food" {
+			foodCount = foodCount + 1
+		}
+	}
+	fmt.Printf("Statistics by Category:\n")
+	fmt.Printf("Drinks: %d\n", drinkCount)
+	fmt.Printf("Food: %d\n", foodCount)
+}
