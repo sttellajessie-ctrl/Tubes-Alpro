@@ -15,9 +15,9 @@ type Menu struct {
 type menuList [NMAX]Menu
 
 type Order struct {
-	Name  string
-	Price int
-	Quantity int 
+	Name     string
+	Price    int
+	Quantity int
 }
 type orderList [NMAX]Order
 
@@ -56,7 +56,8 @@ func adminMenu(catalog *menuList, menuCount *int) {
 		fmt.Println("2. Delete menu")
 		fmt.Println("3. Edit menu")
 		fmt.Println("4. Show menu")
-		fmt.Println("5. Exit")
+		fmt.Println("5. Show statistics")
+		fmt.Println("6. Exit")
 		fmt.Scan(&choose)
 		if choose == 1 {
 			addMenu(&*catalog, &*menuCount)
@@ -70,10 +71,12 @@ func adminMenu(catalog *menuList, menuCount *int) {
 		} else if choose == 4 {
 			// show menu function
 			showMenu(*catalog, *menuCount)
-		} else if choose == 5 {
+		} else if choose == 5{
+			statisticPerCatergory(*catalog, *menuCount)
+		} else if choose == 6 {
 			exit = true
 			fmt.Println("Goodbye!")
-		} else {
+		} else	 {
 			fmt.Println("Invalid option")
 		}
 	}
@@ -132,7 +135,7 @@ func deleteMenu(catalog *menuList, menuCount *int) {
 	}
 	showMenu(*catalog, *menuCount)
 	fmt.Print("Enter the name of menu to delete: ")
-	var name string 
+	var name string
 	fmt.Scan(&name)
 	idx = SearchMenu(*catalog, *menuCount, name)
 	if idx == -1 {
@@ -142,7 +145,7 @@ func deleteMenu(catalog *menuList, menuCount *int) {
 	for i = idx; i < *menuCount-1; i++ {
 		(*catalog)[i] = (*catalog)[i+1]
 	}
-	*menuCount = *menuCount - 1 
+	*menuCount = *menuCount - 1
 	fmt.Printf("Menu '%s' deleted succesfully\n", name)
 }
 
@@ -194,8 +197,6 @@ func editMenu(catalog *menuList, menuCount *int) {
 	}
 }
 
-
-
 // customer menu
 func customerMenu(catalog *menuList, menuCount int) {
 	fmt.Println("welcome to our cafe!")
@@ -221,9 +222,9 @@ func customerMenu(catalog *menuList, menuCount int) {
 	}
 	fmt.Printf("Here is our %s menu:\n", category)
 	showMenuByCategory(sorted, menuCount, category)
-	
-	var currentOrders orderList
-	var orderCount int = 0
+
+	//var currentOrders orderList
+	//var orderCount int = 0
 	var exit bool
 	exit = false
 	for !exit {
@@ -233,17 +234,17 @@ func customerMenu(catalog *menuList, menuCount int) {
 		fmt.Println("3. edit order")
 		fmt.Println("4. show bill")
 		fmt.Println("5. exit")
-		var choose int 
+		var choose int
 		fmt.Scan(&choose)
 		if choose == 1 {
 			//add order func
-		}else if choose == 2 {
+		} else if choose == 2 {
 			//delete order func deleteMenu(currentOrders *orderList, orderCount *int)
-		}else if choose == 3 {
+		} else if choose == 3 {
 			//edit order
 
-		}else if choose == 4 {
-			//func show bill 
+		} else if choose == 4 {
+			//func show bill
 		}
 	}
 }
@@ -269,7 +270,7 @@ func showMenuByCategory(catalog menuList, menuCount int, category string) {
 func showBill(cart orderList, orderCount int) {
 	var i, total_amount, total_item int
 	total_item = 0
-	total_amount = 0  
+	total_amount = 0
 	fmt.Println("|-------Total Bill-------|")
 	for i = 0; i < orderCount; i++ {
 		fmt.Printf("| %-15s | %-10d, | %-10d |\n", cart[i].Name, cart[i].Price, cart[i].Quantity)
@@ -279,37 +280,35 @@ func showBill(cart orderList, orderCount int) {
 	fmt.Printf("Amount %-15d | total item %d", total_amount, total_item)
 }
 
-
 //helper function
 func SearchMenu(catalog menuList, menuCount int, name string) int {
-	var i, idx int 
+	var i, idx int
 	idx = -1
 	for i = 0; i < menuCount; i++ {
 		if catalog[i].Name == name {
-			idx = i 
+			idx = i
 		}
 	}
 	return idx
 }
 
-
-func sortbyAsc(list menuList, n int) menuList{
-	var i, j, minIdx int 
+func sortbyAsc(list menuList, n int) menuList {
+	var i, j, minIdx int
 	for i = 0; i < n-1; i++ {
 		minIdx = i
-		for j = i+1; j < n; j++ {
+		for j = i + 1; j < n; j++ {
 			if list[j].Price < list[minIdx].Price {
-				minIdx = j 
+				minIdx = j
 			}
 		}
 		var temp Menu = list[minIdx]
 		list[minIdx] = list[i]
 		list[i] = temp
 	}
-	return list	
+	return list
 }
 
-func sortbyDesc(list menuList, n int) menuList{
+func sortbyDesc(list menuList, n int) menuList {
 	var i, j int
 	var keyMenu Menu
 	for i = 1; i < n; i++ {
@@ -322,4 +321,40 @@ func sortbyDesc(list menuList, n int) menuList{
 		list[j+1] = keyMenu
 	}
 	return list
+}
+
+func statisticPerCatergory(catalog menuList, menuCount int) {
+	var drinkCount, foodCount, totalOrders, totalPrice int
+	var averagePrice float64
+	drinkCount = 0
+	foodCount = 0
+	totalOrders = 0
+	totalPrice = 0
+	for i := 0; i < menuCount; i++ {
+		if catalog[i].Category == "Drink" {
+			drinkCount = drinkCount + 1
+		} else if catalog[i].Category == "Food" {
+			foodCount = foodCount + 1
+		}
+		totalOrders = totalOrders + 1
+		totalPrice = totalPrice + catalog[i].Price
+	}
+	if menuCount > 0 {
+		averagePrice = float64(totalPrice) / float64(menuCount)
+	}
+	fmt.Printf("Statistics by Category:\n")
+	fmt.Printf("Drinks: %d\n", drinkCount)
+	for i := 0; i < menuCount; i++ {
+		if catalog[i].Category == "Drink" {
+			fmt.Printf(" - %s: Rp%d\n", catalog[i].Name, catalog[i].Price)
+		}
+	}
+	fmt.Printf("Food: %d\n", foodCount)
+	for i := 0; i < menuCount; i++ {
+		if catalog[i].Category == "Food" {
+			fmt.Printf(" - %s: Rp%d\n", catalog[i].Name, catalog[i].Price)
+		}
+	}
+	fmt.Printf("Total Orders: %d\n", totalOrders)
+	fmt.Printf("Average Price: Rp%.0f\n", averagePrice)
 }
