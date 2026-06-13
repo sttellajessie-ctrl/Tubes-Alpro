@@ -11,6 +11,7 @@ type Menu struct {
 	Ingredients     [10]string
 	IngredientCount int
 	Status          bool
+	Stock           int
 }
 type menuList [NMAX]Menu
 
@@ -23,10 +24,10 @@ type orderList [NMAX]Order
 
 func main() {
 	var catalog menuList
-	var menuCount int = 0
-	// var currOrders orderList
-	// var orderCount int = 0
-	var exit bool = false
+	var menuCount int
+	var exit bool
+	exit = false
+	menuCount = 0
 
 	for !exit {
 		fmt.Println("Welcome to our cafe!")
@@ -35,12 +36,25 @@ func main() {
 		fmt.Scan(&user)
 		// only admin and customer can access the menu
 		if user == "admin" {
+			fmt.Println(`                
+								
+			█▒  ▒█                     
+			██  ██                     
+			██░░██  ███   █▒██▒  █   █ 
+			█▒▓▓▒█ ▓▓ ▒█  █▓ ▒█  █   █ 
+			█ ██ █ █   █  █   █  █   █ 
+			█ █▓ █ █████  █   █  █   █ 
+			█    █ █      █   █  █   █ 
+			█    █ ▓▓  █  █   █  █▒ ▓█ 
+			█    █  ███▒  █   █  ▒██▒█ 
+									
+			`)
 			adminMenu(&catalog, &menuCount)
 		} else if user == "customer" {
-			// customerMenu()
+			customerMenu(&catalog, menuCount)
 		} else if user == "exit" {
 			exit = true
-			fmt.Println("Goodbye!")
+			fmt.Println("Goodbye!", `\ (^_^)`)
 		} else {
 			fmt.Println("Invalid user. Please type exactly 'admin', 'customer', or 'exit'.")
 		}
@@ -51,7 +65,9 @@ func adminMenu(catalog *menuList, menuCount *int) {
 	var exit bool = false
 	for !exit {
 		var choose int
+	
 		fmt.Println("\n--- Admin Menu ---")
+		
 		fmt.Println("1. Add menu")
 		fmt.Println("2. Delete menu")
 		fmt.Println("3. Edit menu")
@@ -75,8 +91,8 @@ func adminMenu(catalog *menuList, menuCount *int) {
 			statisticPerCatergory(*catalog, *menuCount)
 		} else if choose == 6 {
 			exit = true
-			fmt.Println("Goodbye!")
-		} else	 {
+			fmt.Println("Goodbye!", `\ (^_^)`)
+		} else {
 			fmt.Println("Invalid option")
 		}
 	}
@@ -118,9 +134,12 @@ func addMenu(catalog *menuList, menuCount *int) {
 				fmt.Scan(&newMenu.Ingredients[j])
 			}
 		}
-
-		fmt.Print("Menu status (true/false): ")
-		fmt.Scan(&newMenu.Status)
+		newMenu.Status = false
+		fmt.Print("Menu stock: ")
+		fmt.Scan(&newMenu.Stock)
+		if newMenu.Stock > 0 {
+			newMenu.Status = true
+		}
 		(*catalog)[*menuCount] = newMenu
 		*menuCount++
 	}
@@ -205,7 +224,7 @@ func customerMenu(catalog *menuList, menuCount int) {
 		return
 	}
 	fmt.Println("Here is our menu:")
-	fmt.Println("categories: Drinks / Food ")
+	fmt.Println("categories: Drink / Food ")
 	fmt.Print("Please choose a category: ")
 	var category string
 	fmt.Scan(&category)
@@ -223,28 +242,88 @@ func customerMenu(catalog *menuList, menuCount int) {
 	fmt.Printf("Here is our %s menu:\n", category)
 	showMenuByCategory(sorted, menuCount, category)
 
-	//var currentOrders orderList
-	//var orderCount int = 0
+	var currentOrders orderList
+	var orderCount int = 0
 	var exit bool
 	exit = false
 	for !exit {
 		fmt.Println("what would you like to do?")
-		fmt.Println("1. Add order")
-		fmt.Println("2. delete order")
-		fmt.Println("3. edit order")
-		fmt.Println("4. show bill")
-		fmt.Println("5. exit")
+		fmt.Println("1. Show menu")
+		fmt.Println("2. Add order")
+		fmt.Println("3. delete order")
+		fmt.Println("4. edit order")
+		fmt.Println("5. show bill")
+		fmt.Println("6. exit")
 		var choose int
 		fmt.Scan(&choose)
-		if choose == 1 {
-			//add order func
-		} else if choose == 2 {
-			//delete order func deleteMenu(currentOrders *orderList, orderCount *int)
-		} else if choose == 3 {
-			//edit order
 
+		if choose == 1 {
+			//show menu func
+			fmt.Println("Here is our menu:")
+			fmt.Println("categories: Drink / Food ")
+			fmt.Print("Please choose a category: ")
+			var category string
+			fmt.Scan(&category)
+			fmt.Print("Please select a price order (1: Low to High, 2: High to Low): ")
+			var priceOrder int
+			fmt.Scan(&priceOrder)
+
+			var sorted menuList
+			sorted = *catalog
+			if priceOrder == 1 {
+				sorted = sortbyAsc(sorted, menuCount)
+			} else {
+				sorted = sortbyDesc(sorted, menuCount)
+			}
+			fmt.Printf("Here is our %s menu:\n", category)
+			showMenuByCategory(sorted, menuCount, category)
+
+		}else if choose == 2 {
+			//add order func
+			addOrder(&currentOrders, &orderCount, &*catalog, menuCount)
+		} else if choose == 3 {
+			//delete order func
+			deleteOrder(&currentOrders, &orderCount)
 		} else if choose == 4 {
-			//func show bill
+			//edit order
+			editOrder(&currentOrders, orderCount)
+		} else if choose == 5 {
+			//show bill for customer
+			showBill(currentOrders, orderCount)
+		} else if choose == 6 {
+			exit = true
+			fmt.Println("Thank you for visiting our cafe, see you next time!")
+		} else {
+			fmt.Println("Invalid option")
+		}
+	}
+}
+
+func addOrder(cart *orderList, orderCount *int, catalog *menuList, menuCount int) {
+	if *orderCount >= NMAX {
+		fmt.Println("Order list is full. Cannot add more orders.")
+		return
+	} else {
+		fmt.Print("Menu name: ")
+		var orderName string
+		var idxMenu int
+		fmt.Scan(&orderName)
+		idxMenu = SearchMenu(*catalog, menuCount, orderName)
+		if idxMenu != -1 && catalog[idxMenu].Status {
+			cart[*orderCount].Name = catalog[idxMenu].Name
+			cart[*orderCount].Price = catalog[idxMenu].Price
+			fmt.Print("Quantity: ")
+			var quantity int
+			fmt.Scan(&quantity)
+			cart[*orderCount].Quantity = quantity
+			catalog[idxMenu].Stock = catalog[idxMenu].Stock - quantity
+			if catalog[idxMenu].Stock <= 0 {
+				catalog[idxMenu].Status = false
+				fmt.Printf("Sorry, %s is out of stock.\n", catalog[idxMenu].Name)
+			}
+			(*orderCount)++
+		} else {
+			fmt.Println("Menu not found. Please enter a valid menu name.")
 		}
 	}
 }
@@ -258,7 +337,7 @@ func showMenuByCategory(catalog menuList, menuCount int, category string) {
 		if catalog[i].Category == category {
 			count = count + 1
 			var menu Menu = catalog[i]
-			fmt.Printf("%d. %s - Rp%d (Available: %t)\n", count, menu.Name, menu.Price, menu.Status)
+			fmt.Printf("%d. %s - Rp%d, Stock: %d, (Available: %t)\n", count, menu.Name, menu.Price, menu.Stock, menu.Status)
 			found = true
 		}
 	}
@@ -271,13 +350,96 @@ func showBill(cart orderList, orderCount int) {
 	var i, total_amount, total_item int
 	total_item = 0
 	total_amount = 0
-	fmt.Println("|-------Total Bill-------|")
-	for i = 0; i < orderCount; i++ {
-		fmt.Printf("| %-15s | %-10d, | %-10d |\n", cart[i].Name, cart[i].Price, cart[i].Quantity)
-		total_amount = total_amount + cart[i].Price
-		total_item = total_item + cart[i].Quantity
+	if orderCount == 0 {
+		fmt.Println("The Customer has not placed any orders yet.")
+	} else {
+		fmt.Println("|-----------Total Bill-----------|")
+		for i = 0; i < orderCount; i++ {
+			fmt.Printf("| %-15s | %-5d | %-5d |\n", cart[i].Name, cart[i].Price, cart[i].Quantity)
+			total_amount = total_amount + cart[i].Price*cart[i].Quantity
+			total_item = total_item + cart[i].Quantity
+		}
+		fmt.Printf("|Amount: %-10d | total item: %d |\n", total_amount, total_item)
 	}
-	fmt.Printf("Amount %-15d | total item %d", total_amount, total_item)
+}
+
+func editOrder(cart *orderList, orderCount int) {
+	var quantity int
+	var enter bool
+	var MenuName string
+	enter = false
+	for !enter {
+		fmt.Println("Choose Menu to edit:")
+		fmt.Scan(&MenuName)
+		for i := 0; i < orderCount; i++ {
+			if MenuName == (cart)[i].Name {
+				enter = true
+				fmt.Println("Enter new quantity:")
+				fmt.Scan(&quantity)
+				(cart)[i].Quantity = quantity
+			} else {
+				fmt.Println("Menu not found. Please enter a valid menu name.")
+			}
+		}
+	}
+}
+
+func deleteOrder(cart *orderList, orderCount *int) {
+	var idx, i int
+	if *orderCount == 0 {
+		fmt.Println("The menu was empty, nothing to delete")
+		return
+	}
+	showOrder(*cart, *orderCount)
+	fmt.Print("Enter the name of menu to delete: ")
+	var name string
+	fmt.Scan(&name)
+	idx = SearchOrderBiner(*cart, *orderCount, name)
+	if idx == -1 {
+		fmt.Println("Menu not found")
+		return
+	}
+	for i = idx; i < *orderCount-1; i++ {
+		(*cart)[i] = (*cart)[i+1]
+	}
+	*orderCount = *orderCount - 1
+	fmt.Printf("Menu '%s' deleted succesfully\n", name)
+}
+
+// show order menu
+
+func showOrder(cart orderList, orderCount int) {
+	var found bool
+	found = false
+	
+	fmt.Println("\n--- Current Order List ---")
+	var i int
+	for i = 0; i < orderCount; i++ {
+		var order Order = cart[i]
+		fmt.Printf("%d. [%s] - Rp%d - Quantity %d\n", i+1, order.Name, order.Price, order.Quantity)
+		found = true
+	}
+	if !found {
+		fmt.Println("The menu is currently empty.")
+	}
+}
+
+func SearchOrderBiner(cart orderList, orderCount int, name string) int {
+	var left, right, mid int
+	left = 0
+	right = orderCount - 1
+	idx := -1
+	for left <= right {
+		mid = (left + right) / 2
+		if cart[mid].Name == name {
+			idx = mid
+		} else if cart[mid].Name < name {
+			left = mid + 1
+		} else {
+			right = mid - 1
+		}
+	}
+	return idx
 }
 
 //helper function
