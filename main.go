@@ -72,7 +72,8 @@ func adminMenu(catalog *menuList, menuCount *int) {
 		fmt.Println("2. Delete menu")
 		fmt.Println("3. Edit menu")
 		fmt.Println("4. Show menu")
-		fmt.Println("5. Exit")
+		fmt.Println("5. Show statistics")
+		fmt.Println("6. Exit")
 		fmt.Scan(&choose)
 		if choose == 1 {
 			addMenu(&*catalog, &*menuCount)
@@ -86,7 +87,9 @@ func adminMenu(catalog *menuList, menuCount *int) {
 		} else if choose == 4 {
 			// show menu function
 			showMenu(*catalog, *menuCount)
-		} else if choose == 5 {
+		} else if choose == 5{
+			statisticPerCatergory(*catalog, *menuCount)
+		} else if choose == 6 {
 			exit = true
 			fmt.Println("Goodbye!", `\ (^_^)`)
 		} else {
@@ -406,15 +409,18 @@ func deleteOrder(cart *orderList, orderCount *int) {
 // show order menu
 
 func showOrder(cart orderList, orderCount int) {
-	if orderCount == 0 {
-		fmt.Println("The menu is currently empty.")
-		return
-	}
+	var found bool
+	found = false
+	
 	fmt.Println("\n--- Current Order List ---")
 	var i int
 	for i = 0; i < orderCount; i++ {
 		var order Order = cart[i]
-		fmt.Printf("%d. [%s] - Rp%d (Quantity: %d)\n", i+1, order.Name, order.Price, order.Quantity)
+		fmt.Printf("%d. [%s] - Rp%d - Quantity %d\n", i+1, order.Name, order.Price, order.Quantity)
+		found = true
+	}
+	if !found {
+		fmt.Println("The menu is currently empty.")
 	}
 
 }
@@ -481,17 +487,37 @@ func sortbyDesc(list menuList, n int) menuList {
 }
 
 func statisticPerCatergory(catalog menuList, menuCount int) {
-	var drinkCount, foodCount int
+	var drinkCount, foodCount, totalOrders, totalPrice int
+	var averagePrice float64
 	drinkCount = 0
 	foodCount = 0
+	totalOrders = 0
+	totalPrice = 0
 	for i := 0; i < menuCount; i++ {
 		if catalog[i].Category == "Drink" {
 			drinkCount = drinkCount + 1
 		} else if catalog[i].Category == "Food" {
 			foodCount = foodCount + 1
 		}
+		totalOrders = totalOrders + 1
+		totalPrice = totalPrice + catalog[i].Price
+	}
+	if menuCount > 0 {
+		averagePrice = float64(totalPrice) / float64(menuCount)
 	}
 	fmt.Printf("Statistics by Category:\n")
 	fmt.Printf("Drinks: %d\n", drinkCount)
+	for i := 0; i < menuCount; i++ {
+		if catalog[i].Category == "Drink" {
+			fmt.Printf(" - %s: Rp%d\n", catalog[i].Name, catalog[i].Price)
+		}
+	}
 	fmt.Printf("Food: %d\n", foodCount)
+	for i := 0; i < menuCount; i++ {
+		if catalog[i].Category == "Food" {
+			fmt.Printf(" - %s: Rp%d\n", catalog[i].Name, catalog[i].Price)
+		}
+	}
+	fmt.Printf("Total Orders: %d\n", totalOrders)
+	fmt.Printf("Average Price: Rp%.0f\n", averagePrice)
 }
